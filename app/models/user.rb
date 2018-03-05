@@ -37,6 +37,7 @@
 #
 
 require 'bepaid.rb'
+require 'digest/md5'
 
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
@@ -183,6 +184,14 @@ class User < ApplicationRecord
       logger.error e.message
       logger.error e.http_body if e.respond_to? :http_body
       user.errors.add :base, "Не удалось создать счёт в bePaid, проверьте лог"
+    end
+  end
+
+  public def avatar
+    if self.photo?
+      self.photo.url(:thumb)
+    else
+      "https://gravatar.com/avatar/#{Digest::MD5.hexdigest(self.email.to_s.downcase)}?size=60"
     end
   end
 end
